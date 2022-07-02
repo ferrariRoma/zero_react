@@ -1,0 +1,97 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>구구단</title>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@16/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- 클래스 컴포넌트와 친숙해지려고 할 쯤, 이제 함수 컴포넌트로 넘어가야 한다는 소식이 전해졌다.
+    많은 이들이 hooks를 쓰라고 하는데 함수형을 좋아하는 사람들의 입맛에 딱일듯! -->
+    <script type="text/babel">
+      // 함수형도 새로 생긴 건 아니다. 이전에도 setState나 ref를 쓰지 않는 태그에는 이걸 썼다. 훨씬 간단하니까.
+      // 근데 사람들이 점점 함수 컴포넌트에서도 setState나 ref를 쓰게 해달라고 했음.
+      // 그래서 그렇게 하게 해준 것이 react hooks이다.
+      // hooks에서는 state를 객체로 묶지 않고 하나씩 쪼갰다고 보면 된다. 그래서 아래처럼 구조분해 문법을 쓴다. 각각의 set들은 해당 값의 전용 setState이다.
+      // 이 친구는 컴포넌트 안에 꼭 넣어주어야 한다. GuGuDan 밖에 뺄 수 없음.
+
+      // use로 시작하는 애들이 hooks이다. 함수 좋아하는 사람들이 함수 컴포넌트에 훅스 추가해줘 해서 해준 것이다.
+      // ref 쓰는 방법도 useRef로 바꼈다. null로 초기화 해줘도 된다.
+      // inputRef.current.focus()로 써야 해서 문법적으로도 바뀜.
+      // class형에서는 변수를 선언하고 그 변수를 input태그에 할당해서 this.변수.focus() 형태로, 즉 this.변수로 DOM에 접근을 했는데 여기서는 hooks에서는 useRef를 이용해서 DOM에 접근을 한다.
+      // 거기에 current라는 걸 하나 더 써서 DOM에 접근한다는 것이 차이점이다.
+      const GuGuDan = () => {
+        const [first, setFirst] = React.useState(Math.ceil(Math.random() * 9));
+        const [second, setScond] = React.useState(Math.ceil(Math.random() * 9));
+        const [value, setValue] = React.useState("");
+        const [result, setResult] = React.useState("");
+        const inputRef = React.useRef(null);
+
+        const onChangeInput = (e) => {
+          // class에서는 setState를 해줬는데 setValue와 같이 각각의 state를 독립적으로 setState할 수 있다.
+          setValue(e.target.value);
+        };
+
+        const onSubmitForm = (e) => {
+          e.preventDefault();
+          // 이렇게 아래와 같이 여러번 setState를 해줘도 React가 알아서 렌더링을 한 번만 되게 해준다.
+          // 그래서 이게 setState가 비동기인 것이다. 동기였으면 하나하나 setState를 했을 때마다 다 렌더링이 됐을탠데
+          // 비동기이기 때문에 setState를 모아서 렌더링을 한 번만 하게 해준다.
+          // 이런 이유로 비동기로 setState를 만들었는데, 이에 대한 부작용으로 +1을 setState를 여러번 했을 때, 비동기이기 때문에 원하는 값을 출력할 수 없었고
+          // 그래서 그에 대한 대책으로 setState내에 (prevState)=>{return ...}함수를 설정하는 방법이 생긴 것이다.
+          // 이건 공식 문서에 나와있는 내용이다.
+          if (first * second === value) {
+            setResult((prevResult) => {
+              return `${first} * ${second} = ${value} 정답`;
+            });
+            setFirst(Math.ceil(Math.random() * 9));
+            setSecond(Math.ceil(Math.random() * 9));
+            setValue("");
+            inputRef.current.focus();
+          } else {
+            setResult(`${first} * ${second} = ${value} 오답!`);
+            setValue("");
+            inputRef.current.focus();
+          }
+        };
+
+        return (
+          <React.Fragment>
+            <div>
+              {first} 곱하기 {second}?
+            </div>
+            <form onChange={onChangeInput}>
+              <input value={value} ref={inputRef} type="number" />
+              <button></button>
+            </form>
+            <div>{result}</div>
+          </React.Fragment>
+        );
+      };
+    </script>
+    <script type="text/babel">
+      ReactDOM.render(<GuGuDan />, document.querySelector("#root"));
+    </script>
+  </body>
+</html>
+<!-- 
+  전반적으로 function component가 다 좋아보이지만 렌더링 과정에서 함수 컴포넌트는 GuGuDan 전체가 바뀐다.
+  그래서 코드가 전반적으로 간결해지는 장점이 있지만 조금 더 느릴 수 있다.
+
+  추가적으로 태그에 id를 쓸 수 있다.
+  <button id="asdf"></button>
+  근데 class는 못 쓴다. js가 헷갈린다. class키워드와 태그 안에 있는 class랑 헷갈린다.
+  그래서 className을 대신 쓴다.
+  <button className="asdf"></button>
+
+  또 label에 for을 쓰려면 htmlFor을 써야 한다. 반복문의 for이랑 헷갈리기 때문에 그렇다.
+ -->

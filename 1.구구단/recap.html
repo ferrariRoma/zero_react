@@ -12,41 +12,74 @@
     ></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   </head>
-  <body>
     <div id="root"></div>
     <!-- 결과: <div id="root"><button>Like</button></div> -->
     <script type="text/babel">
-      class LikeButton extends React.Component {
-        constructor(props) {
-          super(props);
-          this.state = {
-            liked: false,
-          };
-        }
+      // 1. constructor 빼보기 -> state = {}
+      // 2. 뭘 this.state에 설정해주어야 할까? -> 변하는 데이터들. 변하는 데이터들을 여기에 몰아서 데이터를 통제하고 html은 jsx로 render함수에서 리액트가 컨트롤할 수 있도록 구성하기
+      // 3. render()는 언제 실행될까? -> setState가 되면 실행된다. 그래서 렌더링이 너무 많이 되면 성능저하가 난다.
+      // 4. render()에 함수를 직접 선언하지 않는 이유는 뭘까? -> setState될 떄마다 렌더링함수가 실행되기 때문에 안에 함수를 작성해두면 render()을 할 때마다 함수가 재실행된다. 복잡한 함수라면 당연히 성능 저하가 일어남!
+      // 5. ()=>{}화살표 함수를 쓰는 이유 -> this바인딩과 관련됨. this는 class를 가리키는데 function키워드를 써버리면 그 함수를 가리키기 때문에 this의 사용에서 헷갈릴 수 있다.
+      // 6. ref는 어떻게 쓰는거지? -> ref는 인풋 태그와 같은 태그를 지정하고 싶을 때 쓴다. ref={(asdf)=>this.dddd = asfd} 이처럼 dddd라는 클래스 내 변수에 asdf를 할당해주는데 asdf가 input태그를 가리키게 된다. 그리고 각 메소드로 가서 this.dddd.focus(); 라고 하면 된다.
+      // 7. API를 prevState를 통한 현재와 바뀔 데이터의 분리해보기 -> 메소드에서 그렇게 함! render()함수에서 하는게 아니라 '메소드'에서 그렇게 한다.
+      class GuGuDan extends React.Component {
+        state = {
+          first: Math.ceil(Math.random() * 9),
+          second: Math.ceil(Math.random() * 9),
+          value: "",
+          result: "",
+        };
+
+        onSubmit = (event) => {
+          event.preventDefault();
+
+          if(this.state.first*this.state.second===Number(this.state.value)){
+            this.setState((prevState)=>{
+              return {
+                first: Math.ceil(Math.random() * 9),
+                second: Math.ceil(Math.random() * 9),
+                value: "",
+                result: `${prevState.first}*${prevState.second}=${prevState.value} 정답!`
+            }
+            })
+            this.input.focus();
+          } else {
+            this.setState((prevState)=>{
+              return {
+                value: "",
+                result: "땡! 틀렸습니다!"
+              }
+            });
+            this.input.focus();
+          }
+        };
+        onChange = (event) => {
+          this.setState({value: event.target.value})
+        };
+
+        input;
+
+        onRefInput = (v) => {this.input = v}
 
         render() {
-          if (this.state.liked) {
-            return React.createElement(
-              "button",
-              {
-                onClick: () => this.setState({ liked: false }),
-              },
-              "Dislike"
-            );
-          }
-          return React.createElement(
-            "button",
-            {
-              onClick: () => this.setState({ liked: true }),
-            },
-            "Like"
+          return (
+            <React.Fragment>
+              <div>
+                {this.state.first} * {this.state.second} ?
+              </div>
+              <form onSubmit={this.onSubmit}>
+                <input type="number" value={this.state.value} onChange={this.onChange} />
+                <button type="submit">제출</button>
+              </form>
+              <div>{this.state.result}</div>
+            </React.Fragment>
           );
         }
       }
     </script>
     <script type="text/babel">
-      // ReactDOM.render(<LikeButton />, document.querySelector("#root"));
-      ReactDOM.createRoot(document.querySelector("#root")).render(LikeButton);
+      // 17버전으로 render을 먼저 쓰자. 18에서는 createRoot를 쓴다.
+      ReactDOM.render(<GuGuDan />, document.querySelector("#root"));
     </script>
   </body>
 </html>

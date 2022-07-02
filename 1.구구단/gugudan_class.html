@@ -16,6 +16,7 @@
     <div id="root"></div>
     <!-- 결과: <div id="root"><button>Like</button></div> -->
     <script type="text/babel">
+      // 리액트의 핵심. 데이터를 변화시키면 화면에 반영해준다.
       // 아래 클래스를 통해서 구구단 컴포넌트를 만들게 되었다.
       class GuGuDan extends React.Component {
         // 변할 것들은 State에!
@@ -37,38 +38,72 @@
         // input 태그에서 문자를 입력하는 것도 onChange 혹은 onInput에 관한 컨트롤러를 통해서 통제된다.
         // 이렇게 핸들러를 통해서 변하는 부분을 완전히 컨트롤 시켜주는 것이다.
         // 왠만하면 JSX랑 JS랑은 분리를 시켜주는게 좋다.
-        // setState를 통해서 변하는 것에 대한 통제를 해주면 된다.
+        // setState를 통해서 변하는 것에 대한 통제를 해주면 된다. 여기엔 바꾸고 싶은 데이터를 적어준다.
         // 추가적으로 랜더 등의 내장 메소드 외에 이런 우리가 만들어 주는 메소드는 무조건 화살표 함수를 써라.
         // 그래야지 this가 현 class를 바인딩하게 된다.
+        // 그리고 다른 이유로는 setState할 때마다 render()함수가 실행되는데 이 함수들을 JSX에 함께 기술을 해준다면,
+        // render함수와 함께 이 함수도 새로 생기는 것이다. 엄청 복잡한 함수라면 성능이 저하된다.
         onSubmit = (e) => {
           e.preventDefault();
           if (
             parseInt(this.state.value) ===
             this.state.first * this.state.second
           ) {
-            this.setState({
-              result: `${this.state.first}*${this.state.second} =
-                ${this.state.first * this.state.second} 정답`,
-              first: Math.ceil(Math.random() * 9),
-              second: Math.ceil(Math.random() * 9),
-              value: "",
+            // 이렇게 하면 현재 State인 this.state.---가 바뀔 State를 설정해주는 setState에 있는 것이다.
+            // 그래서 이런 건 고쳐주는 게 좋다.
+            // .setState((prevState)=>{return ...}) 이렇게 API를 사용해주는 것이 좋다.
+            // 왜냐하면 setState는 비동기로 진행이 되기 때문에 만약에 a라는 변수를 선언해두고 setState(return {a:a+1})을 3개 해주면 우리가 생각하는 3이 안나온다.
+            // 비동기로 진행되기 때문이다. 그래서 저렇게 API를 사용해서 return으로 변수를 하나하나 반환해주면 3번 쓰면 3이 더해지는 것을 확정할 수 있다.
+            // this.setState({
+            this.setState((prevState) => {
+              return {
+                // result:
+                //   this.state.first +
+                //   "*" +
+                //   this.state.second +
+                //   "=" +
+                //   `${this.state.first * this.state.second} 정답`,
+                result: `${prevState.first}*${prevState.second} =
+                  ${prevState.first * prevState.second} 정답`,
+                first: Math.ceil(Math.random() * 9),
+                second: Math.ceil(Math.random() * 9),
+                value: "",
+              };
             });
+            this.input.focus();
           } else {
             this.setState({
               result: "땡",
               value: "",
             });
+            this.input.focus();
           }
         };
         onChange = (e) => this.setState({ value: e.target.value });
+
+        // DOM에 직접 접근을 하려면 document.querySelector("#...")도 있지만, 이제는 화면 구성과 관련된 부분은 리액트에게 전적으로 맡길 수 있도록 코드를 구성해야,
+        // 개발자가 데이터에 집중을 할 수 있다.
+        // 고로 해당 태그에 ref라는 것을 달고서 거기 ref{ (anychar)=> this.input = anychar}을 설정해두고
+        // 설정을 해두고서 아래처럼 input; 이라고 선언을 해둔 뒤,
+        // 위에 onSubmit 함수에서 처럼
+        // this.input.focus()
+        // 라고 해준다. this는 여기 클래스, Input은 input태그를 지칭하는 임의의 변수, 그리고 그곳에 focus()를 설정하면 된다.
+        input;
+
+        onRefInput = (c) => {
+          this.input = c;
+        };
+
         // 컨텐츠
         render() {
+          // setState를 하면 render함수가 다시 실행된다. 그래서 렌더를 너무 많이하면 느려지고 성능이 저하된다.
+          console.log("렌더링");
           return (
             <React.Fragment>
               <div>
                 {this.state.first} 곱하기 {this.state.second}는?
               </div>
-              <form onSubmit={this.onSubmit}>
+              <form ref={this.onRefInput} onSubmit={this.onSubmit}>
                 <input
                   type="number"
                   value={this.state.value}
