@@ -1,0 +1,98 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>구구단</title>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@16/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- 결과: <div id="root"><button>Like</button></div> -->
+    <script type="text/babel">
+      // 아래 클래스를 통해서 구구단 컴포넌트를 만들게 되었다.
+      class GuGuDan extends React.Component {
+        // 변할 것들은 State에!
+        // constructor(props) {
+        //   this.state = {
+        //     first: Math.ceil(Math.random() * 9),
+        //     second: Math.ceil(Math.random() * 9),
+        //     value: "",
+        //     result: "",
+        //   };
+        // }
+        state = {
+          first: Math.ceil(Math.random() * 9),
+          second: Math.ceil(Math.random() * 9),
+          value: "",
+          result: "",
+        };
+        // 핸들러들은 메소드로!
+        // input 태그에서 문자를 입력하는 것도 onChange 혹은 onInput에 관한 컨트롤러를 통해서 통제된다.
+        // 이렇게 핸들러를 통해서 변하는 부분을 완전히 컨트롤 시켜주는 것이다.
+        // 왠만하면 JSX랑 JS랑은 분리를 시켜주는게 좋다.
+        // setState를 통해서 변하는 것에 대한 통제를 해주면 된다.
+        // 추가적으로 랜더 등의 내장 메소드 외에 이런 우리가 만들어 주는 메소드는 무조건 화살표 함수를 써라.
+        // 그래야지 this가 현 class를 바인딩하게 된다.
+        onSubmit = (e) => {
+          e.preventDefault();
+          if (
+            parseInt(this.state.value) ===
+            this.state.first * this.state.second
+          ) {
+            this.setState({
+              result: `${this.state.first}*${this.state.second} =
+                ${this.state.first * this.state.second} 정답`,
+              first: Math.ceil(Math.random() * 9),
+              second: Math.ceil(Math.random() * 9),
+              value: "",
+            });
+          } else {
+            this.setState({
+              result: "땡",
+              value: "",
+            });
+          }
+        };
+        onChange = (e) => this.setState({ value: e.target.value });
+        // 컨텐츠
+        render() {
+          return (
+            <React.Fragment>
+              <div>
+                {this.state.first} 곱하기 {this.state.second}는?
+              </div>
+              <form onSubmit={this.onSubmit}>
+                <input
+                  type="number"
+                  value={this.state.value}
+                  onChange={this.onChange}
+                />
+                <button type="submit">입력!</button>
+              </form>
+              <div>{this.state.result}</div>
+            </React.Fragment>
+          );
+        }
+      }
+    </script>
+    <script type="text/babel">
+      // 이렇게 만든 구구단 컴포넌트를 가지고 여러 개를 만들어 줄 수 있다.
+      // 같은 컴포넌트지만 각각의 State를 가지기 때문에 개별 동작을 한다.
+      ReactDOM.render(
+        <div>
+          <GuGuDan />
+          <GuGuDan />
+          <GuGuDan />
+        </div>,
+        document.querySelector("#root")
+      );
+    </script>
+  </body>
+</html>
