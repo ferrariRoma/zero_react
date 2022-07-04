@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import Try from "./try";
+import React, { Component, createRef } from "react";
+import Try from "./try_class";
 
 // 숫자 네 개를 겹치지 않게 랜덤하게 뽑는 함수
 function getNumbers() {
@@ -79,9 +79,15 @@ class NumberBaseball extends Component {
           ],
           value: "",
         });
+        this.inputRef.current.focus();
       }
     }
   };
+
+  inputRef = createRef();
+  // inputRef; // 원래는 이렇게 변수를 선언해주고 해당 태그에 가서 (e)=>this.inputRef = e; 이렇게 해줘야 되는데,
+  // createRef쓰면 그냥 이렇게 해서 ref = {this.createRef}를 하면 끝이다.
+  // 대신 createRef를 쓰면 훅스처럼 this.inputRef.current.focus()로 써줘야 해서 current를 하나 더 써줘야 한다.
 
   render() {
     return (
@@ -89,6 +95,7 @@ class NumberBaseball extends Component {
         <h1>{this.state.result}</h1>
         <form onSubmit={this.onSubmitForm}>
           <input
+            ref={this.inputRef}
             maxLength={4}
             value={this.state.value}
             onChange={this.onChangeInput}
