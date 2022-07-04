@@ -15,7 +15,7 @@ function getNumbers() {
 const NumberBaseball_hooks = () => {
   const [result, setResult] = useState("");
   const [value, setValue] = useState("");
-  const [answer, setAnswer] = useState(getNumbers());
+  const [answer, setAnswer] = useState(getNumbers); // lazy init
   const [tries, setTries] = useState([]);
 
   const onChangeInput = (e) => {
