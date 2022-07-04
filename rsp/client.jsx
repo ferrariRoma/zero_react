@@ -7,6 +7,6 @@ const container = document.querySelector("#root");
 const root = createRoot(container);
 root.render(
   <>
-    <Rsp_class />
+    <Rsp_hooks />
   </>
 );
