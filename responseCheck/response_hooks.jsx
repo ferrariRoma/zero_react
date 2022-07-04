@@ -59,8 +59,9 @@ const ResponseCheck_hooks = () => {
     );
   };
 
-  // render의 return 안에서는 for이나 if를 못 쓴다. 그래서 조건부 연산자로 표현해준다.
-  // false, undefined, null은 jsx에서 태그없음을 의미한다.
+  // render의 return 안에서는 for이나 if를 못 쓴다. 쓰면 상당히 지저분해진다. {여기에는} js를 쓸 수 있는데, 그렇게 해서도 함수 안에 if나 for을 쓰는데,
+  // 이후에도 그 함수를 즉시 실행 함수로 만들어 줘야 된다. 함수 안에 if, for을 쓸 수 있는 것을 활용하는 방법인데, 상당히 복잡하다.
+  // 그래서 조건부 연산자로 표현해주고, map메소드를 사용한다. false, undefined, null은 jsx에서 태그없음을 의미한다.
   return (
     <>
       <div id="screen" className={state} onClick={onClickScreen}>
