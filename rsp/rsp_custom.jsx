@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, memo } from "react";
+import useInterval from "./useInterval";
 
 const rspCoords = {
   바위: "0",
@@ -12,24 +13,20 @@ const scores = {
   보: -1,
 };
 
+// custom hook을 배워보자. 보통은 어떤 특정한 훅이 두 개 이상 반복되면 커스텀 훅을 만듦.
+// 여기서도 useRef()와 setInterval이 반복되는데 그런 상황에서는 커스텀 훅으로 만들기 딱 좋다.
+// 훅이 너무 길거나 여러 개가 반복 및 중복이 되면 커스텀 훅으로 돌린다. 그럼 전체적인 가독성이 개선됨.
 const computerChoice = (imgCoord) => {
   return Object.entries(rspCoords).find(function (v) {
     return v[1] === imgCoord;
   })[0];
 };
 
-const Rsp_hooks = memo(() => {
+const Rsp_custom = memo(() => {
   const [result, setResult] = useState("");
   const [imgCoord, setImgCoord] = useState(rspCoords.바위);
   const [score, setScore] = useState(0);
-  const interval = useRef(null);
-
-  useEffect(() => {
-    interval.current = setInterval(changeHand, 100); // -> componentDidMount에 있던 코드임
-    return () => {
-      clearInterval(interval.current);
-    };
-  }, [imgCoord]);
+  const [isRunning, setIsRunning] = useState(true); // 인터벌 관련 커스텀 훅을 멈추기 위한 state
 
   const changeHand = () => {
     if (imgCoord === rspCoords.바위) {
@@ -40,9 +37,10 @@ const Rsp_hooks = memo(() => {
       setImgCoord(rspCoords.바위);
     }
   };
+  useInterval(changeHand, isRunning ? 100 : null);
 
   const onClickBtn = (choice) => () => {
-    clearInterval(interval.current);
+    setIsRunning(false);
     const myScore = scores[choice];
     const cpuScore = scores[computerChoice(imgCoord)];
     const diff = myScore - cpuScore;
@@ -56,7 +54,7 @@ const Rsp_hooks = memo(() => {
       setScore((prevScore) => prevScore - 1);
     }
     setTimeout(() => {
-      interval.current = setInterval(changeHand, 100);
+      setIsRunning(true);
     }, 2000);
   };
 
@@ -85,4 +83,4 @@ const Rsp_hooks = memo(() => {
   );
 });
 
-export default Rsp_hooks;
+export default Rsp_custom;
