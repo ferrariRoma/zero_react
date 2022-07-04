@@ -4,7 +4,7 @@ class Try extends Component {
   render() {
     return (
       <li>
-        <b>{this.props.value.eng}</b> {this.props.value.kor}
+        <b>{this.props.el.try}</b> {this.props.el.result}
       </li>
     );
   }
