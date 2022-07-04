@@ -50,12 +50,22 @@ class ResponseCheck_class extends Component {
     }
   };
 
+  onClickBtn = () => {
+    this.setState({
+      result: [],
+    });
+  };
+
   renderAverage = () => {
     const { result } = this.state;
     return result.length === 0 ? null : (
-      <div>
-        평균시간 : {result.reduce((a, el) => a + el) / this.state.result.length}
-      </div>
+      <>
+        <div>
+          평균시간 :{" "}
+          {result.reduce((a, el) => a + el) / this.state.result.length}
+        </div>
+        <button onClick={this.onClickBtn}>Reset</button>
+      </>
     );
   };
 
