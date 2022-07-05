@@ -59,6 +59,18 @@ function getWinNumbers() {
 // useCallback, useMemo 모두 마찬가지다.
 // 그래서 훅스들은 최상위에 작성해서 실행 순서가 항상 동일하게끔 하는 것이 좋다.
 
+/* 
+만약 useEffect에서 나는 DidMount빼고 DidUpdate만 코드가 작동되게 하고 싶다고 하면, 아래와 같은 꼼수를 쓸 수 있다.
+const mounted = useRef(false)
+useEffect(()=>{
+    if(mounted.current){
+        mounted.current = true;
+    } else {
+        code something
+    }
+}, [바뀌는 state])
+*/
+
 const Lotto_hooks = () => {
   const lottoNumbers = useMemo(() => getWinNumbers(), []);
   const [winNumbers, setWinNumbers] = useState(lottoNumbers);
