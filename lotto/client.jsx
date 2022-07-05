@@ -5,6 +5,6 @@ import Lotto_hooks from "./lotto_hooks";
 
 createRoot(document.querySelector("#root")).render(
   <>
-    <Lotto_class />
+    <Lotto_hooks />
   </>
 );
