@@ -7,9 +7,9 @@ const Tr = memo(({ rowData, rowIndex, dispatch }) => {
       <tr>
         {Array(rowData.length)
           .fill()
-          .map((td, i) => (
+          .map((_, i) => (
             <Td
-              key={i}
+              key={Date.now() + Math.random() * 1000}
               rowIndex={rowIndex}
               cellIndex={i}
               dispatch={dispatch}

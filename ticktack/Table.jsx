@@ -9,7 +9,7 @@ const Table = memo(({ tableData, dispatch }) => {
           .fill()
           .map((tr, i) => (
             <Tr
-              key={i}
+              key={Date.now() + Math.random() * 1000}
               rowIndex={i}
               rowData={tableData[i]}
               dispatch={dispatch}
